@@ -1,0 +1,39 @@
+name: Depoly Webapp to Azure
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  AZURE_WEBAPP_NAME: theweatherfool
+  AZURE_WEBAPP_PATH: '.'
+  DOTNET_VERSION: '6.0.400'
+
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout
+
+      - name: login via Azure CLI 
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: SETUP .NET CORE 
+        uses: actions/checkout@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: dotnet build + publish
+        run: |
+          dotnet build --configuration release
+          dotnet publish -c Release -o '${{ env.AZURE_WEBAPP_PATH }}/app'
+
+      - name: Deploy to App Serivce
+        uses: azure/webapps-deploy@2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          package: '${{ env.AZURE_WEBAPP_PATH }}/app'
