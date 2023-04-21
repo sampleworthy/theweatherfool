@@ -7,7 +7,7 @@ name: Depoly Webapp to Azure
 on:
   push:
     branches:
-      - master
+      - main
 
 env:
   AZURE_WEBAPP_NAME: theweatherfool
