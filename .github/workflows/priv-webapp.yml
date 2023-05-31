@@ -1,0 +1,40 @@
+name: Deploy to Azure Web App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Azure CLI
+        uses: azure/cli-action@v1
+        with:
+          azcliversion: 'latest'
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Get private endpoint URL
+        id: private-endpoint
+        run: |
+          # Get the private endpoint URL from Azure CLI
+          endpointUrl=$(az network private-endpoint show --name webapptest --resource-group APIMTesting --query "privateEndpointConnections[0].privateLinkServiceConnectionState.actionsRequired" -o tsv)
+          echo "::set-output name=url::$endpointUrl"
+
+      - name: Deploy to Azure Web App
+        run: |
+          # Retrieve the private endpoint URL
+          endpointUrl=$PRIVATE_ENDPOINT_URL
+
+          # Use the private endpoint URL in your deployment command or script
+          echo "Deploying to Azure Web App with private endpoint: $endpointUrl"
+          # Run your deployment commands or scripts here using the private endpoint URL
