@@ -25,7 +25,7 @@ jobs:
           endpointUrl=$(az network private-endpoint show --name webapptest --resource-group APIMTesting --query "privateEndpointConnections[0].privateLinkServiceConnectionState.actionsRequired" -o tsv)
           echo "::set-output name=url::$endpointUrl"
 
-      - name: Deploy to Azure Web App
+      - name: Deploy to Azure Web App SE
         run: |
           # Retrieve the private endpoint URL
           endpointUrl=$PRIVATE_ENDPOINT_URL
